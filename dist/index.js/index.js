@@ -18,11 +18,12 @@ app.get("/", (req, res) => {
 });
 io.on("connection", (socket) => {
     console.log("a user connected");
-    socket.on("send-message", (value, currentMemberId) => {
-        io.emit("receive-message", value, currentMemberId);
+    socket.join(socket.handshake.query.connectionId);
+    socket.on("send-message", (value, currentMemberId, toMemberId) => {
+        socket.to(toMemberId).emit("receive-message", value, currentMemberId);
     });
-    socket.on("new-message-error", () => {
-        io.emit("receive-message-error");
+    socket.on("new-message-settled", (toMemberId) => {
+        socket.to(toMemberId).emit("receive-message-settled");
     });
 });
 server.listen(5000, () => {
