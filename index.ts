@@ -18,9 +18,20 @@ io.on("connection", (socket) => {
   console.log("a user connected");
 
   socket.join(socket.handshake.query.connectionId!);
-  socket.on("send-message", (value, currentMemberId, toMemberId) => {
-    socket.to(toMemberId).emit("receive-message", value, currentMemberId);
-  });
+  socket.on(
+    "send-message",
+    (value, fileUrl, currentMemberId, toMemberId, conversationId) => {
+      socket
+        .to(toMemberId)
+        .emit(
+          "receive-message",
+          value,
+          fileUrl,
+          currentMemberId,
+          conversationId
+        );
+    }
+  );
   socket.on("new-message-settled", (toMemberId) => {
     socket.to(toMemberId).emit("receive-message-settled");
   });
