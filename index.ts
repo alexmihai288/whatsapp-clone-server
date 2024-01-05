@@ -1,6 +1,7 @@
 import express from "express";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
+import cors from "cors"; // Import the cors middleware
 
 const app = express();
 const server = createServer(app);
@@ -9,6 +10,7 @@ const io = new Server(server, {
     origin: "*",
   },
 });
+app.use(cors());
 
 app.get("/", (req, res) => {
   res.send("<h1>Hello world</h1>");
