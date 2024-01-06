@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Profile {
+  id       String @id @default(uuid())
+  userId   String @unique
+  name     String
+  imageUrl String @db.Text
+  email    String @db.Text
+
+  connectionId String @default(uuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages               Message[]
+  conversationsInitiated Conversation[] @relation("memberOne")
+  conversationsReceived  Conversation[] @relation("memberTwo")
+  groupsMember           GroupMember[]
+  groupMessages           GroupMessage[]
+}
+
+model Conversation {
+  id String @id @default(uuid())
+
+  memberOneId String
+  memberOne   Profile @relation("memberOne", fields: [memberOneId], references: [userId], onDelete: Cascade)
+
+  memberTwoId String
+  memberTwo   Profile @relation("memberTwo", fields: [memberTwoId], references: [userId], onDelete: Cascade)
+
+  messages Message[]
+
+  @@unique([memberOneId, memberTwoId])
+  @@index([memberTwoId])
+}
+
+model Message {
+  id      String  @id @default(uuid())
+  content String  @db.Text
+  fileUrl String? @db.Text
+
+  memberId String
+  member   Profile @relation(fields: [memberId], references: [userId], onDelete: Cascade)
+
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([memberId])
+  @@index([conversationId])
+}
+
+model Group {
+  id String @id @default(uuid())
+  name String
+  imageUrl String
+
+  members GroupMember[]
+
+  messages GroupMessage[]
+}
+
+model GroupMember {
+  id      String  @id @default(uuid())
+  isOwner Boolean
+
+  memberId String
+  member   Profile @relation(fields: [memberId], references: [userId], onDelete: Cascade)
+
+  groupId String
+  Group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+}
+
+model GroupMessage {
+  id      String  @id @default(uuid())
+  content String  @db.Text
+  fileUrl String? @db.Text
+
+  memberId String
+  member   Profile @relation(fields: [memberId], references: [userId], onDelete: Cascade)
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([memberId])
+  @@index([groupId])
+}
