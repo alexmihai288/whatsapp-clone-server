@@ -60,12 +60,12 @@ io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
             .to(groupId)
             .emit("receive-group-message", value, fileUrl, currentMemberId, groupId);
     });
-    socket.on("invalidate-invite-members", (ownerId) => {
-        console.log(ownerId);
-        socket.to(ownerId).emit("receive-invalidate-invite-members");
-    });
     socket.on("new-group-message-settled", (groupId) => {
         socket.to(groupId).emit("receive-group-message-settled");
+    });
+    socket.on("send-kick", (connectionId) => {
+        console.log(connectionId);
+        socket.to(connectionId).emit("receive-send-kick");
     });
 }));
 server.listen(5000, () => {

@@ -57,7 +57,7 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("invite-to-group", (memberId, groupId) => {
-   socket.to(memberId).emit("receive-invite-to-group", groupId);
+    socket.to(memberId).emit("receive-invite-to-group", groupId);
   });
 
   socket.on(
@@ -75,13 +75,13 @@ io.on("connection", async (socket) => {
     }
   );
 
-    socket.on("invalidate-invite-members",(ownerId)=>{
-      console.log(ownerId)
-      socket.to(ownerId).emit("receive-invalidate-invite-members")
-    })
-
   socket.on("new-group-message-settled", (groupId) => {
     socket.to(groupId).emit("receive-group-message-settled");
+  });
+
+  socket.on("send-kick", (connectionId) => {
+    console.log(connectionId);
+    socket.to(connectionId).emit("receive-send-kick");
   });
 });
 
