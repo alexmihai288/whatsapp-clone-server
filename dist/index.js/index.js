@@ -40,6 +40,9 @@ io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
         },
     });
     currentUserGroups === null || currentUserGroups === void 0 ? void 0 : currentUserGroups.groupsMember.map((group) => socket.join(group.groupId));
+    socket.on("send-start-conversation", (connectionId) => {
+        socket.to(connectionId).emit("receive-send-start-conversation");
+    });
     socket.on("send-message", (value, fileUrl, currentMemberId, toMemberId, conversationId) => {
         socket
             .to(toMemberId)

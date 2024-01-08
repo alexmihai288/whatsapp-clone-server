@@ -33,6 +33,10 @@ io.on("connection", async (socket) => {
 
   currentUserGroups?.groupsMember.map((group) => socket.join(group.groupId));
 
+  socket.on("send-start-conversation",(connectionId)=>{
+    socket.to(connectionId).emit("receive-send-start-conversation");
+  })
+
   socket.on(
     "send-message",
     (value, fileUrl, currentMemberId, toMemberId, conversationId) => {
