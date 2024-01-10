@@ -29,6 +29,7 @@ app.get("/", (req, res) => {
     res.send("<h1>Hello world</h1>");
 });
 io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     console.log("a user connected");
     socket.join(socket.handshake.query.connectionId);
     const currentUserGroups = yield db_1.db.profile.findFirst({
@@ -39,7 +40,7 @@ io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
             groupsMember: true,
         },
     });
-    currentUserGroups === null || currentUserGroups === void 0 ? void 0 : currentUserGroups.groupsMember.map((group) => socket.join(group.groupId));
+    (_a = currentUserGroups === null || currentUserGroups === void 0 ? void 0 : currentUserGroups.groupsMember) === null || _a === void 0 ? void 0 : _a.map((group) => socket.join(group.groupId));
     socket.on("send-start-conversation", (connectionId) => {
         socket.to(connectionId).emit("receive-send-start-conversation");
     });
